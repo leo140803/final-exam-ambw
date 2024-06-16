@@ -38,8 +38,8 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => HomeScreen()));
       } else {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Incorrect PIN')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Incorrect PIN'), backgroundColor: Colors.red));
       }
     }
   }
@@ -47,27 +47,90 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(isSetup ? 'Set PIN' : 'Enter PIN'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: _pinController,
-              decoration: InputDecoration(labelText: 'PIN'),
-              obscureText: true,
-              keyboardType: TextInputType.number,
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _login,
-              child: Text(isSetup ? 'Set PIN' : 'Login'),
-            ),
-          ],
+        backgroundColor:
+            Colors.white,
+        elevation: 0,
+        title: Text(
+          isSetup ? 'Set PIN' : 'Login',
+          style: TextStyle(color: Colors.black),
         ),
+        centerTitle: true,
+      ),
+      body: _buildBody(),
+    );
+  }
+
+  Widget _buildBody() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24.0), 
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(height: 40),
+
+          SizedBox(height: 20),
+          Image.asset(
+            'lib/assets/logo.png', 
+            height: 200, 
+          ),
+          SizedBox(height: 40),
+          TextField(
+            cursorColor: Colors.black,
+            controller: _pinController,
+            decoration: InputDecoration(
+              labelText: 'Enter Pin',
+              labelStyle: TextStyle(
+                  color:
+                      Colors.black), 
+              enabledBorder: OutlineInputBorder(
+                // Normal state border
+                borderSide: BorderSide(
+                    color: Colors.black,
+                    width: 2.0), 
+                borderRadius: BorderRadius.circular(30.0),
+              ),
+              focusedBorder: OutlineInputBorder(
+                // Border when TextField is selected
+                borderSide: BorderSide(
+                    color: Colors.black,
+                    width: 2.0), 
+                borderRadius: BorderRadius.circular(30.0),
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(30.0),
+                borderSide:
+                    BorderSide(color: Colors.black, width: 2.0), 
+              ),
+            ),
+            obscureText: true,
+            keyboardType: TextInputType.number,
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors
+                  .black, 
+            ),
+          ),
+
+          SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: _login,
+            child: Text(
+              isSetup ? 'Set PIN' : 'Login',
+              style: TextStyle(color: Colors.white), 
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(
+                    30.0), 
+              ),
+              padding: EdgeInsets.symmetric(
+                  horizontal: 50, vertical: 10),
+            ),
+          ),
+        ],
       ),
     );
   }

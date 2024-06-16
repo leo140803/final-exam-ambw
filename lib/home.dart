@@ -15,6 +15,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('Notes'),
         actions: [
@@ -23,6 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () => Navigator.pushNamed(context, '/settings'),
           ),
         ],
+        backgroundColor: Colors.white,
       ),
       body: ValueListenableBuilder(
         valueListenable: Hive.box('notes').listenable(),
@@ -35,15 +37,23 @@ class _HomeScreenState extends State<HomeScreen> {
             itemBuilder: (context, index) {
               final note = box.getAt(index) as Map;
               return Card(
+                color: Colors.white,
+                surfaceTintColor: Colors.white,
                 child: ListTile(
-                  title: Text(note['title'] ?? 'No Title', style: TextStyle(fontWeight: FontWeight.bold)),
+                  title: Text(note['title'] ?? 'No Title',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(note['content'] ?? 'No Content'),
                       SizedBox(height: 4),
-                      Text('Created: ${_formatDate(note['createdAt'])}', style: TextStyle(fontSize: 12, color: Colors.grey)),
-                      Text('Last Edited: ${_formatDate(note['lastEditedAt'])}', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                      Text('Created: ${_formatDate(note['createdAt'])}',
+                          style: TextStyle(fontSize: 12, color: Colors.grey)),
+                      Text(
+                          note['lastEditedAt'] != '-'
+                              ? 'Last Edited: ${_formatDate(note['lastEditedAt'])}'
+                              : 'Last Edited: ${note['lastEditedAt']}',
+                          style: TextStyle(fontSize: 12, color: Colors.grey)),
                     ],
                   ),
                   isThreeLine: true,
@@ -51,22 +61,24 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        icon: Icon(Icons.edit, color: Colors.blue),
+                        icon: Icon(
+                          Icons.edit,
+                        ),
                         onPressed: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => NoteEditorScreen(initialNote: note, noteIndex: index),
+                            builder: (context) => NoteEditorScreen(
+                                initialNote: note, noteIndex: index),
                           ),
                         ),
                       ),
                       IconButton(
-                        icon: Icon(Icons.delete, color: Colors.red),
+                        icon: Icon(Icons.delete),
                         onPressed: () => box.deleteAt(index),
                       ),
                     ],
                   ),
-                  onTap: () {
-                  },
+                  onTap: () {},
                 ),
                 margin: EdgeInsets.all(8),
                 elevation: 2,
@@ -77,10 +89,15 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => CreateNote()));
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => CreateNote()));
         },
-        child: Icon(Icons.add),
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
         tooltip: 'Add Note',
+        backgroundColor: Colors.black,
       ),
     );
   }
@@ -88,6 +105,6 @@ class _HomeScreenState extends State<HomeScreen> {
   String _formatDate(String? dateStr) {
     if (dateStr == null) return 'Unknown date';
     DateTime date = DateTime.parse(dateStr);
-    return DateFormat('yyyy-MM-dd – kk:mm').format(date);
+    return DateFormat('yyyy-MM-dd – hh:mm a').format(date);
   }
 }

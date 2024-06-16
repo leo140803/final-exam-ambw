@@ -39,7 +39,7 @@ class _CreateNoteState extends State<CreateNote> {
           ? _contentController.text
           : 'No content',
       'createdAt': now,
-      'lastEditedAt': now,
+      'lastEditedAt': '-',
     };
 
     await box.add(newNote);
