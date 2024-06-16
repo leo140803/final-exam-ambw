@@ -11,6 +11,7 @@ void main() async {
   await Hive.initFlutter();
   await Hive.openBox('notes');
   await Hive.openBox('settings');
+  // await Hive.deleteBoxFromDisk('notes');
   runApp(const MainApp());
 }
 
@@ -28,7 +29,6 @@ class MainApp extends StatelessWidget {
       home: LoginScreen(),
       routes: {
         '/login': (context) => LoginScreen(),
-        // Define other routes here
       },
     );
   }
