@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/create.dart';
 import 'package:flutter_application_1/edit.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:intl/intl.dart';  // Add this for date formatting
+import 'package:intl/intl.dart';
+// import 'edit_note_screen.dart';  // Assuming this is the import for your NoteEditorScreen
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -45,9 +47,23 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                   isThreeLine: true,
-                  trailing: IconButton(
-                    icon: Icon(Icons.delete, color: Colors.red),
-                    onPressed: () => box.deleteAt(index),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.edit, color: Colors.blue),
+                        onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => NoteEditorScreen(initialNote: note, noteIndex: index),
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.delete, color: Colors.red),
+                        onPressed: () => box.deleteAt(index),
+                      ),
+                    ],
                   ),
                   onTap: () {
                   },
@@ -61,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => NoteEditorScreen()));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => CreateNote()));
         },
         child: Icon(Icons.add),
         tooltip: 'Add Note',

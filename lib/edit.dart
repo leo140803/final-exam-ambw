@@ -12,37 +12,41 @@ class NoteEditorScreen extends StatefulWidget {
 }
 
 class _NoteEditorScreenState extends State<NoteEditorScreen> {
-  late TextEditingController _contentController;
   late TextEditingController _titleController;
+  late TextEditingController _contentController;
 
   @override
   void initState() {
     super.initState();
-    _contentController = TextEditingController();
-    _titleController = TextEditingController();
+    // Initialize the controllers with existing data if available
+    _titleController = TextEditingController(text: widget.initialNote?['title'] ?? '');
+    _contentController = TextEditingController(text: widget.initialNote?['content'] ?? '');
   }
 
   @override
   void dispose() {
-    _contentController.dispose();
     _titleController.dispose();
+    _contentController.dispose();
     super.dispose();
   }
 
   void _saveNote() async {
     final box = Hive.box('notes');
     final now = DateTime.now().toString();
-    final newNote = {
-      'title':
-          _titleController.text.isNotEmpty ? _titleController.text : 'Untitled',
-      'content': _contentController.text.isNotEmpty
-          ? _contentController.text
-          : 'No content',
-      'createdAt': now,
+    // Create or update the note map
+    final updatedNote = {
+      'title': _titleController.text,
+      'content': _contentController.text,
+      'createdAt': widget.initialNote?['createdAt'] ?? now,
       'lastEditedAt': now,
     };
 
-    await box.add(newNote);
+    if (widget.noteIndex != null) {
+      await box.putAt(widget.noteIndex!, updatedNote);
+    } else {
+      await box.add(updatedNote);
+    }
+
     Navigator.pop(context);
   }
 
@@ -50,7 +54,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create Note'),
+        title: Text(widget.initialNote == null ? 'Create Note' : 'Edit Note'),
         actions: [
           IconButton(
             icon: Icon(Icons.save),
@@ -60,17 +64,17 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
+        child: ListView(
+          children: <Widget>[
             TextField(
               controller: _titleController,
-              decoration: InputDecoration(labelText: 'Note Title'),
-              maxLines: 1,
+              decoration: InputDecoration(labelText: 'Title'),
+              keyboardType: TextInputType.text,
             ),
-            SizedBox(height: 10),
             TextField(
               controller: _contentController,
-              decoration: InputDecoration(labelText: 'Note Content'),
+              decoration: InputDecoration(labelText: 'Content'),
+              keyboardType: TextInputType.multiline,
               maxLines: null,
             ),
           ],
