@@ -20,12 +20,15 @@ class _PinSettingsScreenState extends State<PinSettingsScreen> {
         if (_newPinController.text == _confirmPinController.text) {
           await box.put('pin', _newPinController.text);
           Navigator.pop(context);
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("PIN changed successfully")));
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("PIN changed successfully")));
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("New PIN does not match")));
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text("New PIN does not match")));
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Incorrect old PIN")));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("Incorrect old PIN")));
       }
     }
   }
@@ -81,7 +84,17 @@ class _PinSettingsScreenState extends State<PinSettingsScreen> {
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _changePin,
-                child: Text('Change PIN'),
+                child: Text(
+                  'Change PIN',
+                  style: TextStyle(color: Colors.white),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                ),
               ),
             ],
           ),
