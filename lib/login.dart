@@ -29,7 +29,6 @@ class _LoginScreenState extends State<LoginScreen> {
   void _login() async {
     var box = Hive.box('settings');
     if (isSetup) {
-      // Save new PIN
       box.put('pin', _pinController.text);
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => HomeScreen()));

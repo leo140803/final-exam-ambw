@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/login.dart';
-import 'package:flutter_application_1/models/note.dart';
 import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final appDocumentDirectory = await getApplicationCacheDirectory();
+  final appDocumentDirectory = await getApplicationDocumentsDirectory();
   Hive.init(appDocumentDirectory.path);
-  Hive.registerAdapter(NoteAdapter());
+  await Hive.initFlutter();
+  await Hive.openBox('notes');
   await Hive.openBox('settings');
-  await Hive.openBox<Note>('notes');
   runApp(const MainApp());
 }
 
