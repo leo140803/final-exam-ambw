@@ -12,6 +12,7 @@ void main() async {
   await Hive.initFlutter();
   await Hive.openBox('notes');
   await Hive.openBox('settings');
+  // await Hive.deleteBoxFromDisk('settings');
   // await Hive.deleteBoxFromDisk('notes');
   runApp(const MainApp());
 }

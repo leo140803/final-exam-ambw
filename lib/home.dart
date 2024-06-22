@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/create.dart';
+import 'package:flutter_application_1/detail.dart';
 import 'package:flutter_application_1/edit.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -20,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text('Notes'),
         actions: [
           IconButton(
-            icon: Icon(Icons.settings),
+            icon: Icon(CupertinoIcons.settings),
             onPressed: () => Navigator.pushNamed(context, '/settings'),
           ),
         ],
@@ -39,49 +41,44 @@ class _HomeScreenState extends State<HomeScreen> {
               return Card(
                 color: Colors.white,
                 surfaceTintColor: Colors.white,
-                child: ListTile(
-                  title: Text(note['title'] ?? 'No Title',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(note['content'] ?? 'No Content'),
-                      SizedBox(height: 4),
-                      Text('Created: ${_formatDate(note['createdAt'])}',
-                          style: TextStyle(fontSize: 12, color: Colors.grey)),
-                      Text(
-                          note['lastEditedAt'] != '-'
-                              ? 'Last Edited: ${_formatDate(note['lastEditedAt'])}'
-                              : 'Last Edited: ${note['lastEditedAt']}',
-                          style: TextStyle(fontSize: 12, color: Colors.grey)),
-                    ],
-                  ),
-                  isThreeLine: true,
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: Icon(
-                          Icons.edit,
-                        ),
-                        onPressed: () => Navigator.push(
+                child: Dismissible(
+                    key: Key(note['key']
+                        .toString()), // Ensure you have a unique key here
+                    direction: DismissDirection.endToStart,
+                    dismissThresholds: {DismissDirection.endToStart: 0.25},
+                    confirmDismiss: (direction) =>
+                        _showConfirmDialog(context, box, index),
+                    background: Container(
+                      color: CupertinoColors.destructiveRed,
+                      alignment: Alignment.centerRight,
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Icon(CupertinoIcons.delete,
+                          color: CupertinoColors.white),
+                    ),
+                    child: CupertinoListTile(
+                      onTap: () {
+                        Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => NoteEditorScreen(
-                                initialNote: note, noteIndex: index),
+                            builder: (context) => NoteDetailScreen(
+                              note: note,
+                              noteIndex: index,
+                            ),
                           ),
+                        );
+                      },
+                      title: Text(note['title'] ?? 'No Title',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      subtitle: Padding(
+                        padding: EdgeInsets.only(top: 4),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(note['content'] ?? 'No Content'),
+                          ],
                         ),
                       ),
-                      IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () => box.deleteAt(index),
-                      ),
-                    ],
-                  ),
-                  onTap: () {},
-                ),
-                margin: EdgeInsets.all(8),
-                elevation: 2,
+                    )),
               );
             },
           );
@@ -106,5 +103,36 @@ class _HomeScreenState extends State<HomeScreen> {
     if (dateStr == null) return 'Unknown date';
     DateTime date = DateTime.parse(dateStr);
     return DateFormat('yyyy-MM-dd – hh:mm a').format(date);
+  }
+
+  Future<bool> _showConfirmDialog(
+      BuildContext context, Box box, int index) async {
+    return await showCupertinoDialog<bool>(
+          context: context,
+          builder: (BuildContext context) {
+            return CupertinoAlertDialog(
+              title: Text('Confirm Delete'),
+              content: Text('Are you sure you want to delete this note?'),
+              actions: <Widget>[
+                CupertinoDialogAction(
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(color: CupertinoColors.activeBlue),
+                  ),
+                  onPressed: () => Navigator.of(context).pop(false),
+                ),
+                CupertinoDialogAction(
+                  child: Text('Delete'),
+                  isDestructiveAction: true,
+                  onPressed: () {
+                    box.deleteAt(index);
+                    Navigator.of(context).pop(true);
+                  },
+                ),
+              ],
+            );
+          },
+        ) ??
+        false;
   }
 }
