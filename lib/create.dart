@@ -27,7 +27,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       'createdAt': now,
       'lastEditedAt': now,
     });
-    Navigator.of(context).pop();
+    Navigator.of(context).pushNamed('/home');
   }
 
   @override

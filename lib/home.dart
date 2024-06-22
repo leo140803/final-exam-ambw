@@ -16,11 +16,25 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int notesCount = 0;
+  void initState() {
+    super.initState();
+    final notesBox = Hive.box('notes');
+    notesCount = notesBox.length;
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        leading: CupertinoButton(
+          child: Icon(CupertinoIcons.square_arrow_right,
+              color: CupertinoColors.systemRed),
+          onPressed: () {
+            print('Logout action triggered');
+            Navigator.pushReplacementNamed(context, '/login');
+          },
+        ),
         title: Text('Notes'),
         actions: [
           IconButton(
@@ -132,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       bottomNavigationBar: BottomAppBar(
         shadowColor: CupertinoColors.systemGrey,
-        
+
         color: CupertinoColors.white,
         surfaceTintColor: CupertinoColors.white,
         // elevation: 0,
@@ -140,14 +154,15 @@ class _HomeScreenState extends State<HomeScreen> {
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 50.0, sigmaY: 50.0),
             child: Container(
-          
-              
               height: 60, // Semi-transparent background
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
-                  Text('${Hive.box('notes').length} Notes',
-                      style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.w500)),
+                  Text('${notesCount} Notes',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500)),
                   Spacer(),
                   IconButton(
                     icon: Icon(CupertinoIcons.create),
@@ -211,6 +226,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Text('Delete'),
                   isDestructiveAction: true,
                   onPressed: () {
+                    setState(() {
+                      notesCount--;
+                    });
                     box.deleteAt(index);
                     Navigator.of(context).pop();
                   },

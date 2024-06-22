@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/home.dart';
 import 'package:flutter_application_1/login.dart';
 import 'package:flutter_application_1/setting.dart';
 import 'package:hive/hive.dart';
@@ -31,7 +32,8 @@ class MainApp extends StatelessWidget {
       home: LoginScreen(),
       routes: {
         '/login': (context) => LoginScreen(),
-        '/settings': (context) => PinSettingsScreen()
+        '/settings': (context) => PinSettingsScreen(),
+        '/home': (context)=> HomeScreen()
       },
     );
   }
