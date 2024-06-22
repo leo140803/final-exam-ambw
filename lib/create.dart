@@ -71,7 +71,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 border: InputBorder.none,
               ),
             ),
-            SizedBox(height: 10),
             TextField(
               cursorColor: Colors.black,
               controller: _contentController,

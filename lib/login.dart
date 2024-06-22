@@ -8,8 +8,9 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _pinController = TextEditingController();
+  String? _confirmPin;
   bool isSetup = false;
+  String enteredPin = "";
 
   @override
   void initState() {
@@ -29,25 +30,64 @@ class _LoginScreenState extends State<LoginScreen> {
   void _login() async {
     var box = Hive.box('settings');
     if (isSetup) {
-      box.put('pin', _pinController.text);
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => HomeScreen()));
+      if (_confirmPin == null) {
+        _confirmPin = enteredPin;
+        setState(() {
+          enteredPin = "";
+        });
+      } else {
+        if (_confirmPin == enteredPin) {
+          box.put('pin', enteredPin);
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => HomeScreen()));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('PINs do not match, try again')));
+          _confirmPin = null;
+          enteredPin = "";
+        }
+      }
     } else {
-      // Check PIN
-      if (box.get('pin') == _pinController.text) {
+      if (box.get('pin') == enteredPin) {
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => HomeScreen()));
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(
-              'Incorrect PIN',
-              style: TextStyle(
-                color: Colors.white,
-              ),
-            ),
-            backgroundColor: Colors.black));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Incorrect PIN')));
       }
     }
+  }
+
+  void _addPinNumber(String number) {
+    if (enteredPin.length < 4) {
+      setState(() {
+        enteredPin += number;
+      });
+    }
+  }
+
+  void _deleteLastEntry() {
+    if (enteredPin.isNotEmpty) {
+      setState(() {
+        enteredPin = enteredPin.substring(0, enteredPin.length - 1);
+      });
+    }
+  }
+
+  Widget _buildPinNumberButton(String number) {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: TextButton(
+        onPressed: () => _addPinNumber(number),
+        child:
+            Text(number, style: TextStyle(fontSize: 24, color: Colors.black)),
+        style: TextButton.styleFrom(
+            shape: CircleBorder(),
+            backgroundColor: Colors.grey[300],
+            minimumSize: Size(60, 60) // Adjust the size as necessary
+            ),
+      ),
+    );
   }
 
   @override
@@ -63,67 +103,84 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         centerTitle: true,
       ),
-      body: _buildBody(),
-    );
-  }
-
-  Widget _buildBody() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(height: 40),
-          SizedBox(height: 20),
-          Image.asset(
-            'lib/assets/logo.png',
-            height: 200,
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(bottom: 5),
+                child: Text(
+                  isSetup && _confirmPin != null ? 'Confirm PIN' : 'Enter PIN',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+              Text(
+                '●' * enteredPin.length,
+                style: TextStyle(fontSize: 35, letterSpacing: 5),
+              ),
+              SizedBox(height: 20),
+              for (var row in [
+                [1, 2, 3],
+                [4, 5, 6],
+                [7, 8, 9]
+              ])
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: row
+                      .map((e) => _buildPinNumberButton(e.toString()))
+                      .toList(),
+                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: TextButton(
+                      onPressed: () {},
+                      child: Text("",
+                          style: TextStyle(fontSize: 24, color: Colors.black)),
+                      style: TextButton.styleFrom(
+                          shape: CircleBorder(),
+                          backgroundColor: Colors.white,
+                          minimumSize:
+                              Size(60, 60) // Adjust the size as necessary
+                          ),
+                    ),
+                  ),
+                  _buildPinNumberButton("0"),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: TextButton(
+                      onPressed: _deleteLastEntry,
+                      child:
+                          Icon(Icons.backspace, size: 20, color: Colors.black),
+                      style: TextButton.styleFrom(
+                          shape: CircleBorder(),
+                          backgroundColor: Colors.grey[300],
+                          minimumSize: Size(60, 60)),
+                    ),
+                  )
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top:8.0),
+                child: ElevatedButton(
+                  onPressed: _login,
+                  child: Text('Enter', style: TextStyle(color: Colors.white)),
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 100, vertical: 10),
+                  ),
+                ),
+              ),
+            ],
           ),
-          SizedBox(height: 40),
-          TextField(
-            cursorColor: Colors.black,
-            controller: _pinController,
-            decoration: InputDecoration(
-              labelText: 'Enter Pin',
-              labelStyle: TextStyle(color: Colors.black),
-              enabledBorder: OutlineInputBorder(
-                // Normal state border
-                borderSide: BorderSide(color: Colors.black, width: 2.0),
-                borderRadius: BorderRadius.circular(30.0),
-              ),
-              focusedBorder: OutlineInputBorder(
-                // Border when TextField is selected
-                borderSide: BorderSide(color: Colors.black, width: 2.0),
-                borderRadius: BorderRadius.circular(30.0),
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(30.0),
-                borderSide: BorderSide(color: Colors.black, width: 2.0),
-              ),
-            ),
-            obscureText: true,
-            keyboardType: TextInputType.number,
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.black,
-            ),
-          ),
-          SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: _login,
-            child: Text(
-              isSetup ? 'Set PIN' : 'Login',
-              style: TextStyle(color: Colors.white),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.black,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30.0),
-              ),
-              padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

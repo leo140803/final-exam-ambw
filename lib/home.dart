@@ -131,19 +131,23 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
       bottomNavigationBar: BottomAppBar(
-        color: Colors.white,
-        surfaceTintColor: Colors.white,
+        shadowColor: CupertinoColors.systemGrey,
+        
+        color: CupertinoColors.white,
+        surfaceTintColor: CupertinoColors.white,
         // elevation: 0,
         child: ClipRect(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 50.0, sigmaY: 50.0),
             child: Container(
+          
+              
               height: 60, // Semi-transparent background
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
                   Text('${Hive.box('notes').length} Notes',
-                      style: TextStyle(color: Colors.black, fontSize: 15)),
+                      style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.w500)),
                   Spacer(),
                   IconButton(
                     icon: Icon(CupertinoIcons.create),

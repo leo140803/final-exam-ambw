@@ -99,7 +99,6 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
                 border: InputBorder.none,
               ),
             ),
-            SizedBox(height: 10),
             TextField(
               cursorColor: Colors.black,
               controller: _contentController,
