@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/create.dart';
@@ -22,11 +24,15 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text('Notes'),
         actions: [
           IconButton(
-            icon: Icon(CupertinoIcons.settings),
+            icon: Icon(
+              CupertinoIcons.settings,
+              color: CupertinoColors.systemYellow,
+            ),
             onPressed: () => Navigator.pushNamed(context, '/settings'),
           ),
         ],
         backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
       ),
       body: ValueListenableBuilder(
         valueListenable: Hive.box('notes').listenable(),
@@ -38,65 +44,141 @@ class _HomeScreenState extends State<HomeScreen> {
             itemCount: box.length,
             itemBuilder: (context, index) {
               final note = box.getAt(index) as Map;
-              return Card(
-                color: Colors.white,
-                surfaceTintColor: Colors.white,
-                child: Dismissible(
-                    key: Key(note['key']
-                        .toString()), // Ensure you have a unique key here
-                    direction: DismissDirection.endToStart,
-                    dismissThresholds: {DismissDirection.endToStart: 0.25},
-                    confirmDismiss: (direction) =>
-                        _showConfirmDialog(context, box, index),
-                    background: Container(
-                      color: CupertinoColors.destructiveRed,
-                      alignment: Alignment.centerRight,
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: Icon(CupertinoIcons.delete,
-                          color: CupertinoColors.white),
-                    ),
-                    child: CupertinoListTile(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => NoteDetailScreen(
-                              note: note,
-                              noteIndex: index,
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                child: SizedBox(
+                  height: 65,
+                  child: Card(
+                    color: Colors.white,
+                    surfaceTintColor: Colors.white,
+                    child: Dismissible(
+                        key: Key(note['key']
+                            .toString()), // Ensure you have a unique key here
+                        direction: DismissDirection.endToStart,
+                        dismissThresholds: {DismissDirection.endToStart: 0.25},
+                        confirmDismiss: (direction) =>
+                            _showConfirmDialog(context, box, index),
+                        background: Container(
+                          color: CupertinoColors.destructiveRed,
+                          alignment: Alignment.centerRight,
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: Icon(CupertinoIcons.delete,
+                              color: CupertinoColors.white),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                          child: CupertinoListTile(
+                            onTap: () {
+                              print(note['content']);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => NoteDetailScreen(
+                                    note: note,
+                                    noteIndex: index,
+                                  ),
+                                ),
+                              );
+                            },
+                            title: Padding(
+                              padding: const EdgeInsets.only(top: 10),
+                              child: Text(
+                                  note['title'] != ""
+                                      ? note['title']
+                                      : 'No Additional Text',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16)),
+                            ),
+                            subtitle: Row(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 10),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(note['lastEditedAt'] != "-"
+                                          ? formatNoteDate(note['lastEditedAt'])
+                                          : formatNoteDate(note['createdAt'])),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 10),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(note['content'] != ""
+                                          ? note['content']
+                                          : 'No Additional Text'),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        );
-                      },
-                      title: Text(note['title'] ?? 'No Title',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Padding(
-                        padding: EdgeInsets.only(top: 4),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(note['content'] ?? 'No Content'),
-                          ],
-                        ),
-                      ),
-                    )),
+                        )),
+                  ),
+                ),
               );
             },
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => CreateNoteScreen()));
-        },
-        child: Icon(
-          Icons.add,
-          color: Colors.white,
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.white,
+        surfaceTintColor: Colors.white,
+        // elevation: 0,
+        child: ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 50.0, sigmaY: 50.0),
+            child: Container(
+              height: 60, // Semi-transparent background
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  Text('${Hive.box('notes').length} Notes',
+                      style: TextStyle(color: Colors.black, fontSize: 15)),
+                  Spacer(),
+                  IconButton(
+                    icon: Icon(CupertinoIcons.create),
+                    color: CupertinoColors.systemYellow,
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => CreateNoteScreen()));
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
-        tooltip: 'Add Note',
-        backgroundColor: Colors.black,
       ),
     );
+  }
+
+  String formatNoteDate(String dateStr) {
+    if (dateStr == "-") return "No Date";
+
+    DateTime noteDate = DateTime.parse(dateStr);
+    DateTime now = DateTime.now();
+    DateTime today = DateTime(now.year, now.month, now.day);
+    DateTime aWeekAgo = now.subtract(Duration(days: 7));
+
+    if (noteDate.compareTo(today) >= 0) {
+      return DateFormat('HH:mm').format(noteDate);
+    } else if (noteDate.isAfter(aWeekAgo)) {
+      return DateFormat('EEEE').format(noteDate);
+    } else {
+      return DateFormat('HH/mm/yy').format(noteDate);
+    }
   }
 
   String _formatDate(String? dateStr) {
@@ -126,7 +208,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   isDestructiveAction: true,
                   onPressed: () {
                     box.deleteAt(index);
-                    Navigator.of(context).pop(true);
+                    Navigator.of(context).pop();
                   },
                 ),
               ],

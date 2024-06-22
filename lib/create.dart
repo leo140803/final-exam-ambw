@@ -19,10 +19,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   }
 
   void _saveNote() {
-    if (_titleController.text.isEmpty && _contentController.text.isEmpty) {
-      Navigator.of(context).pop(); // Optionally alert the user about empty fields
-      return;
-    }
     Box notesBox = Hive.box('notes');
     var now = DateTime.now().toString();
     notesBox.add({
