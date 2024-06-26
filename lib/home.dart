@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_application_1/create.dart';
 import 'package:flutter_application_1/detail.dart';
 import 'package:flutter_application_1/edit.dart';
@@ -121,16 +122,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                 SizedBox(
                                   width: 5,
                                 ),
-                                Padding(
-                                  padding: EdgeInsets.only(bottom: 10),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(note['content'] != ""
-                                          ? note['content']
-                                          : 'No Additional Text'),
-                                    ],
+                                Expanded(
+                                  child: Padding(
+                                    padding: EdgeInsets.only(bottom: 10),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(note['content'] != ""
+                                            ? note['content']
+                                            : 'No Additional Text'),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ],
