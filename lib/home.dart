@@ -9,7 +9,6 @@ import 'package:flutter_application_1/edit.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
-// import 'edit_note_screen.dart';  // Assuming this is the import for your NoteEditorScreen
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -17,12 +16,15 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int notesCount = 0;
+  int notesCount = 0; // Menghitung jumlah catatan yang tersimpan
+
+  @override
   void initState() {
     super.initState();
-    final notesBox = Hive.box('notes');
+    final notesBox = Hive.box('notes'); 
     notesCount = notesBox.length;
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,17 +45,21 @@ class _HomeScreenState extends State<HomeScreen> {
               CupertinoIcons.settings,
               color: CupertinoColors.systemYellow,
             ),
-            onPressed: () => Navigator.pushNamed(context, '/settings'),
+            onPressed: () => Navigator.pushNamed(
+                context, '/settings'),
           ),
         ],
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.white,
       ),
       body: ValueListenableBuilder(
-        valueListenable: Hive.box('notes').listenable(),
+        valueListenable: Hive.box('notes')
+            .listenable(), // listen perubahan pada kotak catatan
         builder: (context, Box box, _) {
           if (box.isEmpty) {
-            return Center(child: Text('No notes yet'));
+            return Center(
+                child:
+                    Text('No notes yet')); // Tampilkan jika tidak ada catatan
           }
           return ListView.builder(
             itemCount: box.length,
@@ -68,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     surfaceTintColor: Colors.white,
                     child: Dismissible(
                         key: Key(note['key']
-                            .toString()), // Ensure you have a unique key here
+                            .toString()), 
                         direction: DismissDirection.endToStart,
                         dismissThresholds: {DismissDirection.endToStart: 0.25},
                         confirmDismiss: (direction) =>
@@ -84,7 +90,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                           child: CupertinoListTile(
                             onTap: () {
-                              print(note['content']);
+                              print(note[
+                                  'content']); 
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -100,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: Text(
                                   note['title'] != ""
                                       ? note['title']
-                                      : 'No Additional Text',
+                                      : 'No Additional Text', // Judul catatan
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16)),
@@ -114,8 +121,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(note['lastEditedAt'] != "-"
-                                          ? formatNoteDate(note['lastEditedAt'])
-                                          : formatNoteDate(note['createdAt'])),
+                                          ? formatNoteDate(note[
+                                              'lastEditedAt']) // Format tanggal terakhir diedit
+                                          : formatNoteDate(note[
+                                              'createdAt'])), // Atau tanggal dibuat
                                     ],
                                   ),
                                 ),
@@ -130,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(note['content'] != ""
-                                            ? note['content']
+                                            ? note['content'] // Isi catatan
                                             : 'No Additional Text'),
                                       ],
                                     ),
@@ -149,19 +158,17 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       bottomNavigationBar: BottomAppBar(
         shadowColor: CupertinoColors.systemGrey,
-
         color: CupertinoColors.white,
         surfaceTintColor: CupertinoColors.white,
-        // elevation: 0,
         child: ClipRect(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 50.0, sigmaY: 50.0),
             child: Container(
-              height: 60, // Semi-transparent background
+              height: 60,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
-                  Text('${notesCount} Notes',
+                  Text('${notesCount} Notes', // Jumlah catatan
                       style: TextStyle(
                           color: Colors.black,
                           fontSize: 15,
@@ -174,7 +181,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => CreateNoteScreen()));
+                              builder: (context) =>
+                                  CreateNoteScreen())); 
                     },
                   ),
                 ],
@@ -186,6 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // Fungsi untuk memformat tanggal catatan
   String formatNoteDate(String dateStr) {
     if (dateStr == "-") return "No Date";
 
@@ -201,12 +210,6 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       return DateFormat('HH/mm/yy').format(noteDate);
     }
-  }
-
-  String _formatDate(String? dateStr) {
-    if (dateStr == null) return 'Unknown date';
-    DateTime date = DateTime.parse(dateStr);
-    return DateFormat('yyyy-MM-dd – hh:mm a').format(date);
   }
 
   Future<bool> _showConfirmDialog(
@@ -230,9 +233,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   isDestructiveAction: true,
                   onPressed: () {
                     setState(() {
-                      notesCount--;
+                      notesCount--; // Mengurangi jumlah catatan
                     });
-                    box.deleteAt(index);
+                    box.deleteAt(index); // Menghapus catatan dari box
                     Navigator.of(context).pop();
                   },
                 ),
