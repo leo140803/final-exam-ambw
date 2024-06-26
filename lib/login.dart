@@ -8,41 +8,43 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  String? _confirmPin;
-  bool isSetup = false;
-  String enteredPin = "";
+  String? _confirmPin;  // Variable untuk menyimpan PIN konfirmasi selama setup
+  bool isSetup = false;  // Status apakah user perlu setup PIN
+  String enteredPin = "";  // String untuk menyimpan PIN yang dimasukkan user
 
   @override
   void initState() {
     super.initState();
-    _checkPinSetup();
+    _checkPinSetup();  // Memeriksa apakah PIN sudah disetup
   }
 
+  // Fungsi untuk memeriksa apakah PIN sudah disetup
   void _checkPinSetup() async {
-    var box = Hive.box('settings');
+    var box = Hive.box('settings');  // Buka kotak Hive untuk pengaturan
     if (box.get('pin') == null) {
       setState(() {
-        isSetup = true;
+        isSetup = true;  // Jika tidak ada PIN, set isSetup menjadi true
       });
     }
   }
 
+  // Fungsi untuk login atau setup PIN
   void _login() async {
     var box = Hive.box('settings');
     if (isSetup) {
       if (_confirmPin == null) {
-        _confirmPin = enteredPin;
+        _confirmPin = enteredPin;  // Jika belum ada konfirmasi PIN, simpan PIN pertama
         setState(() {
           enteredPin = "";
         });
       } else {
         if (_confirmPin == enteredPin) {
-          box.put('pin', enteredPin);
+          box.put('pin', enteredPin);  // Jika PIN cocok, simpan ke database
           Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => HomeScreen()));
+              context, MaterialPageRoute(builder: (context) => HomeScreen()));  // Navigasi ke HomeScreen
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('PINs do not match, try again')));
+              SnackBar(content: Text('PINs do not match, try again')));  // Jika tidak cocok, tampilkan pesan error
           _confirmPin = null;
           enteredPin = "";
         }
@@ -50,41 +52,43 @@ class _LoginScreenState extends State<LoginScreen> {
     } else {
       if (box.get('pin') == enteredPin) {
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => HomeScreen()));
+            context, MaterialPageRoute(builder: (context) => HomeScreen()));  // Jika PIN benar, navigasi ke HomeScreen
       } else {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Incorrect PIN')));
+            .showSnackBar(SnackBar(content: Text('Incorrect PIN')));  // Jika salah, tampilkan pesan error
       }
     }
   }
 
+  // Fungsi untuk menambahkan angka ke PIN yang dimasukkan
   void _addPinNumber(String number) {
-    if (enteredPin.length < 4) {
+    if (enteredPin.length < 4) {  // Batasi jumlah digit PIN sampai 4
       setState(() {
-        enteredPin += number;
+        enteredPin += number;  // Tambahkan angka ke enteredPin
       });
     }
   }
 
+  // Fungsi untuk menghapus digit terakhir dari PIN
   void _deleteLastEntry() {
     if (enteredPin.isNotEmpty) {
       setState(() {
-        enteredPin = enteredPin.substring(0, enteredPin.length - 1);
+        enteredPin = enteredPin.substring(0, enteredPin.length - 1);  // Hapus digit terakhir
       });
     }
   }
 
+  // Fungsi untuk membangun tombol angka PIN
   Widget _buildPinNumberButton(String number) {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: TextButton(
         onPressed: () => _addPinNumber(number),
-        child:
-            Text(number, style: TextStyle(fontSize: 24, color: Colors.black)),
+        child: Text(number, style: TextStyle(fontSize: 24, color: Colors.black)),
         style: TextButton.styleFrom(
             shape: CircleBorder(),
             backgroundColor: Colors.grey[300],
-            minimumSize: Size(60, 60) // Adjust the size as necessary
+            minimumSize: Size(60, 60)
             ),
       ),
     );
@@ -144,7 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           shape: CircleBorder(),
                           backgroundColor: Colors.white,
                           minimumSize:
-                              Size(60, 60) // Adjust the size as necessary
+                              Size(60, 60)
                           ),
                     ),
                   ),
@@ -153,8 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     padding: const EdgeInsets.all(10.0),
                     child: TextButton(
                       onPressed: _deleteLastEntry,
-                      child:
-                          Icon(Icons.backspace, size: 20, color: Colors.black),
+                      child: Icon(Icons.backspace, size: 20, color: Colors.black),
                       style: TextButton.styleFrom(
                           shape: CircleBorder(),
                           backgroundColor: Colors.grey[300],
