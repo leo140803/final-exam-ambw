@@ -18,16 +18,18 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     super.dispose();
   }
 
+  // Function to save a new note into Hive box
   void _saveNote() {
-    Box notesBox = Hive.box('notes');
-    var now = DateTime.now().toString();
+    Box notesBox = Hive.box('notes'); 
+    var now = DateTime.now().toString(); 
     notesBox.add({
-      'title': _titleController.text,
-      'content': _contentController.text,
-      'createdAt': now,
+      'title': _titleController.text, 
+      'content': _contentController.text, 
+      'createdAt': now, 
       'lastEditedAt': now,
     });
-    Navigator.of(context).pushNamed('/home');
+    Navigator.of(context)
+        .pushNamed('/home'); 
   }
 
   @override
@@ -35,13 +37,16 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        leading: BackButton(color: CupertinoColors.activeBlue),
+        leading: BackButton(
+            color:
+                CupertinoColors.activeBlue), 
         backgroundColor: Colors.white,
         elevation: 0,
-        title: Text('Create Note', style: TextStyle(color: Colors.black)),
+        title: Text('Create Note',
+            style: TextStyle(color: Colors.black)), 
         actions: [
           TextButton(
-            onPressed: _saveNote,
+            onPressed: _saveNote, // Call _saveNote when Save button is pressed
             child: Row(
               children: [
                 Text('Save',
@@ -62,27 +67,27 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
             TextField(
               autocorrect: false,
               cursorColor: Colors.black,
-              controller: _titleController,
+              controller: _titleController, 
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 28,
               ),
               decoration: InputDecoration(
-                hintText: "Enter title",
+                hintText: "Enter title", 
                 border: InputBorder.none,
               ),
             ),
             TextField(
               autocorrect: false,
               cursorColor: Colors.black,
-              controller: _contentController,
+              controller: _contentController, 
               style: TextStyle(fontSize: 18),
               decoration: InputDecoration(
                 hintText: "Enter content",
                 border: InputBorder.none,
               ),
               keyboardType: TextInputType.multiline,
-              maxLines: null,
+              maxLines: null, 
             ),
           ],
         ),
