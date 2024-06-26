@@ -1,26 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
+
 class PinSettingsScreen extends StatefulWidget {
   @override
   _PinSettingsScreenState createState() => _PinSettingsScreenState();
 }
 
 class _PinSettingsScreenState extends State<PinSettingsScreen> {
-  String enteredPin = "";
-  String? newPin;
-  bool isConfirming = false;
-  bool isOldPinCorrect = false;
+  String enteredPin = ""; // Holds the currently entered PIN
+  String? newPin; // Holds the new PIN to be set
+  bool isConfirming = false; // Flag to check if in confirmation mode
+  bool isOldPinCorrect =
+      false; // Flag to check if the entered old PIN is correct
 
   void _addPinNumber(String number) {
     if (enteredPin.length < 4) {
+      // Limit the PIN length to 4 digits
       setState(() {
         enteredPin += number;
       });
-      print("Current PIN Entry: $enteredPin");
     }
   }
 
+  // Function to delete the last entered digit
   void _deleteLastEntry() {
     if (enteredPin.isNotEmpty) {
       setState(() {
@@ -29,6 +32,7 @@ class _PinSettingsScreenState extends State<PinSettingsScreen> {
     }
   }
 
+  // Function to verify the old PIN against stored value
   void _verifyOldPin() {
     var box = Hive.box('settings');
     String currentPin = box.get('pin', defaultValue: '');
@@ -42,22 +46,20 @@ class _PinSettingsScreenState extends State<PinSettingsScreen> {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Incorrect old PIN")));
       setState(() {
-        enteredPin = ""; // Ensure we reset this for re-entry
+        enteredPin = ""; // Reset the entered PIN for another attempt
       });
     }
   }
 
+  // Function to set or confirm the new PIN
   void _setNewPin() {
     if (newPin == null) {
-      setState(() {
-        newPin = enteredPin;
-        enteredPin = "";
-        isConfirming = true;
-      });
-
+      newPin = enteredPin;
+      enteredPin = "";
+      isConfirming = true;
       print("New PIN set, please confirm.");
     } else if (newPin == enteredPin) {
-      Hive.box('settings').put('pin', enteredPin);
+      Hive.box('settings').put('pin', enteredPin); // Update the stored PIN
       Navigator.pop(context);
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("PIN changed successfully")));
@@ -66,21 +68,21 @@ class _PinSettingsScreenState extends State<PinSettingsScreen> {
           SnackBar(content: Text("PINs do not match, try again")));
       setState(() {
         enteredPin = "";
-        isConfirming = true;
+        isConfirming = false; // Reset confirmation status
       });
     }
   }
 
+  // Function to handle the submission based on current state
   void _submitPin() {
     if (!isOldPinCorrect) {
       _verifyOldPin();
-    } else if (!isConfirming) {
-      _setNewPin();
     } else {
       _setNewPin();
     }
   }
 
+  // Helper function to build a numeric button for the PIN
   Widget _buildPinNumberButton(String number) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -97,6 +99,7 @@ class _PinSettingsScreenState extends State<PinSettingsScreen> {
     );
   }
 
+  // Helper function to build the backspace button
   Widget _buildBackspaceButton() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -165,24 +168,11 @@ class _PinSettingsScreenState extends State<PinSettingsScreen> {
                       style: TextButton.styleFrom(
                           shape: CircleBorder(),
                           backgroundColor: Colors.white,
-                          minimumSize:
-                              Size(60, 60) // Adjust the size as necessary
-                          ),
+                          minimumSize: Size(60, 60)),
                     ),
                   ),
                   _buildPinNumberButton("0"),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: TextButton(
-                      onPressed: _deleteLastEntry,
-                      child:
-                          Icon(Icons.backspace, size: 20, color: Colors.black),
-                      style: TextButton.styleFrom(
-                          shape: CircleBorder(),
-                          backgroundColor: Colors.grey[300],
-                          minimumSize: Size(60, 60)),
-                    ),
-                  )
+                  _buildBackspaceButton(),
                 ],
               ),
               ElevatedButton(
