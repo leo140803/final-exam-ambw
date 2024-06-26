@@ -8,9 +8,11 @@ import 'package:path_provider/path_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // hive init
   final appDocumentDirectory = await getApplicationDocumentsDirectory();
   Hive.init(appDocumentDirectory.path);
   await Hive.initFlutter();
+  // open box hive with notes and settings key
   await Hive.openBox('notes');
   await Hive.openBox('settings');
   // await Hive.deleteBoxFromDisk('settings');
