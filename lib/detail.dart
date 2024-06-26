@@ -88,6 +88,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
               ),
             ),
             TextField(
+              autocorrect: false,
               cursorColor: Colors.black,
               controller: _titleController,
               style: TextStyle(
@@ -100,6 +101,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
               ),
             ),
             TextField(
+              autocorrect: false,
               cursorColor: Colors.black,
               controller: _contentController,
               style: TextStyle(fontSize: 18),

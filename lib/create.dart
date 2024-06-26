@@ -60,6 +60,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextField(
+              autocorrect: false,
               cursorColor: Colors.black,
               controller: _titleController,
               style: TextStyle(
@@ -72,6 +73,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
               ),
             ),
             TextField(
+              autocorrect: false,
               cursorColor: Colors.black,
               controller: _contentController,
               style: TextStyle(fontSize: 18),
