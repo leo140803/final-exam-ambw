@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 
+
 class NoteDetailScreen extends StatefulWidget {
-  final Map note;
-  final int noteIndex;
+  final Map note; // Holds the details of the note
+  final int noteIndex; // Index of the note in the Hive box
 
   NoteDetailScreen({required this.note, required this.noteIndex});
 
@@ -14,8 +15,10 @@ class NoteDetailScreen extends StatefulWidget {
 }
 
 class _NoteDetailScreenState extends State<NoteDetailScreen> {
-  late TextEditingController _titleController;
-  late TextEditingController _contentController;
+  late TextEditingController
+      _titleController; 
+  late TextEditingController
+      _contentController;
 
   @override
   void initState() {
@@ -24,6 +27,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
     _contentController = TextEditingController(text: widget.note['content']);
   }
 
+  
   @override
   void dispose() {
     _titleController.dispose();
@@ -31,32 +35,37 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
     super.dispose();
   }
 
+
   String _formatDateTime(String? dateTime) {
     if (dateTime == null) return 'Unknown date';
     DateTime parsedDate = DateTime.parse(dateTime);
-    return DateFormat('dd MMMM yyyy ' 'a' ' HH:mm').format(parsedDate);
+    return DateFormat('dd MMMM yyyy - HH:mm').format(parsedDate);
   }
 
   @override
   Widget build(BuildContext context) {
-    String dateText = widget.note['lastEditedAt'] != "-" ? 
-                      _formatDateTime(widget.note['lastEditedAt']) :
-                      _formatDateTime(widget.note['createdAt']);
+    // Determine display date based on last edit or creation time
+    String dateText = widget.note['lastEditedAt'] != "-"
+        ? _formatDateTime(widget.note['lastEditedAt'])
+        : _formatDateTime(widget.note['createdAt']);
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        leading: BackButton(color: CupertinoColors.activeBlue),
+        leading: BackButton(
+            color:
+                CupertinoColors.activeBlue), 
         backgroundColor: Colors.white,
         elevation: 0,
-        title: Text('Notes', style: TextStyle(color: Colors.black)),
+        title: Text('Notes',
+            style: TextStyle(color: Colors.black)), 
         actions: [
           TextButton(
             onPressed: () {
-              Box box = Hive.box('notes');
+              Box box = Hive.box('notes'); 
               box.putAt(widget.noteIndex, {
-                'title': _titleController.text,
-                'content': _contentController.text,
+                'title': _titleController.text, // Updated title
+                'content': _contentController.text, // Updated content
                 'createdAt':
                     widget.note['createdAt'], // Preserve original creation date
                 'lastEditedAt':
@@ -96,21 +105,21 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
                 fontSize: 28,
               ),
               decoration: InputDecoration(
-                hintText: "Enter title",
+                hintText: "Enter title", 
                 border: InputBorder.none,
               ),
             ),
             TextField(
               autocorrect: false,
               cursorColor: Colors.black,
-              controller: _contentController,
+              controller: _contentController, 
               style: TextStyle(fontSize: 18),
               decoration: InputDecoration(
-                hintText: "Enter content",
+                hintText: "Enter content", 
                 border: InputBorder.none,
               ),
               keyboardType: TextInputType.multiline,
-              maxLines: null,
+              maxLines: null, 
             ),
           ],
         ),
