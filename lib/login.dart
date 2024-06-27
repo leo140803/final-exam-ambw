@@ -45,8 +45,11 @@ class _LoginScreenState extends State<LoginScreen> {
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('PINs do not match, try again')));  // Jika tidak cocok, tampilkan pesan error
-          _confirmPin = null;
-          enteredPin = "";
+          setState(() {
+            // _confirmPin = null;
+            enteredPin = "";
+          });
+          
         }
       }
     } else {

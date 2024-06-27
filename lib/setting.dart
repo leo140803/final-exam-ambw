@@ -54,9 +54,12 @@ class _PinSettingsScreenState extends State<PinSettingsScreen> {
   // Function to set or confirm the new PIN
   void _setNewPin() {
     if (newPin == null) {
-      newPin = enteredPin;
+      setState(() {
+        newPin = enteredPin;
       enteredPin = "";
       isConfirming = true;
+      });
+      
       print("New PIN set, please confirm.");
     } else if (newPin == enteredPin) {
       Hive.box('settings').put('pin', enteredPin); // Update the stored PIN
@@ -68,7 +71,7 @@ class _PinSettingsScreenState extends State<PinSettingsScreen> {
           SnackBar(content: Text("PINs do not match, try again")));
       setState(() {
         enteredPin = "";
-        isConfirming = false; // Reset confirmation status
+        isConfirming = true; // Reset confirmation status
       });
     }
   }
