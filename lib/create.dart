@@ -26,7 +26,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       'title': _titleController.text, 
       'content': _contentController.text, 
       'createdAt': now, 
-      'lastEditedAt': now,
+      'lastEditedAt': "-",
     });
     Navigator.of(context)
         .pushNamed('/home'); 

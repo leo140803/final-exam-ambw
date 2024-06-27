@@ -20,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    final notesBox = Hive.box('notes'); 
+    final notesBox = Hive.box('notes');
     notesCount = notesBox.length;
   }
 
@@ -44,8 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
               CupertinoIcons.settings,
               color: CupertinoColors.systemYellow,
             ),
-            onPressed: () => Navigator.pushNamed(
-                context, '/settings'),
+            onPressed: () => Navigator.pushNamed(context, '/settings'),
           ),
         ],
         backgroundColor: Colors.white,
@@ -67,13 +66,12 @@ class _HomeScreenState extends State<HomeScreen> {
               return Padding(
                 padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                 child: SizedBox(
-                  height: 65,
+                  height: 110,
                   child: Card(
                     color: Colors.white,
                     surfaceTintColor: Colors.white,
                     child: Dismissible(
-                        key: Key(note['key']
-                            .toString()), 
+                        key: Key(note['key'].toString()),
                         direction: DismissDirection.endToStart,
                         dismissThresholds: {DismissDirection.endToStart: 0.25},
                         confirmDismiss: (direction) =>
@@ -89,8 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                           child: CupertinoListTile(
                             onTap: () {
-                              print(note[
-                                  'content']); 
+                              print(note['content']);
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -109,39 +106,52 @@ class _HomeScreenState extends State<HomeScreen> {
                                       : 'No Additional Text', // Judul catatan
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 16)),
+                                      fontSize: 18)),
                             ),
-                            subtitle: Row(
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Padding(
-                                  padding: EdgeInsets.only(bottom: 10),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                  padding: EdgeInsets.only(bottom: 5),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
-                                      Text(note['lastEditedAt'] != "-"
-                                          ? formatNoteDate(note[
-                                              'lastEditedAt']) // Format tanggal terakhir diedit
-                                          : formatNoteDate(note[
-                                              'createdAt'])), // Atau tanggal dibuat
+                                      Expanded(
+                                        child: Text(
+                                          note['content'] != ""
+                                              ? note['content'] // Isi catatan
+                                              : 'No Additional Text',
+                                          overflow: TextOverflow
+                                              .ellipsis,
+                                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600), // Handle overflow with ellipsis
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
-                                SizedBox(
-                                  width: 5,
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 5),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Created At: " +
+                                            (formatNoteDate(note['createdAt'])),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: EdgeInsets.only(bottom: 10),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(note['content'] != ""
-                                            ? note['content'] // Isi catatan
-                                            : 'No Additional Text'),
-                                      ],
-                                    ),
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 10),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Last Edited At: " +
+                                            (formatNoteDate(
+                                                note['lastEditedAt'])),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
@@ -180,8 +190,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                                  CreateNoteScreen())); 
+                              builder: (context) => CreateNoteScreen()));
                     },
                   ),
                 ],
@@ -195,7 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Fungsi untuk memformat tanggal catatan
   String formatNoteDate(String dateStr) {
-    if (dateStr == "-") return "No Date";
+    if (dateStr == "-") return "Never Edited";
 
     DateTime noteDate = DateTime.parse(dateStr);
     DateTime now = DateTime.now();

@@ -39,7 +39,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
   String _formatDateTime(String? dateTime) {
     if (dateTime == null) return 'Unknown date';
     DateTime parsedDate = DateTime.parse(dateTime);
-    return DateFormat('dd MMMM yyyy - HH:mm').format(parsedDate);
+    return DateFormat('dd MMMM yyyy \'at\' HH:mm').format(parsedDate);
   }
 
   @override
